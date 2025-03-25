@@ -46,7 +46,6 @@ describe('S3MigrationService', () => {
   beforeEach(() => {
     service = new S3MigrationService();
     
-    // Setup mock options
     mockOptions = {
       sourceBucket: 'source-bucket',
       destinationBucket: 'destination-bucket',

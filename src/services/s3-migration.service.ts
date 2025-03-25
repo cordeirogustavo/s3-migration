@@ -39,7 +39,6 @@ export class S3MigrationService implements IS3MigrationService {
     const destinationClient = this.createS3Client(options.destinationConfig);
 
     try {
-      // Test source bucket access
       try {
         const testCommand = new ListObjectsV2Command({
           Bucket: options.sourceBucket,
@@ -56,7 +55,6 @@ export class S3MigrationService implements IS3MigrationService {
         throw new Error(`Failed to access source bucket: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
 
-      // Test destination bucket access
       try {
         const testCommand = new ListObjectsV2Command({
           Bucket: options.destinationBucket,
@@ -190,7 +188,6 @@ export class S3MigrationService implements IS3MigrationService {
     destinationBucket: string
   ): Promise<void> {
     try {
-      // First, get the object from source bucket
       const getCommand = new GetObjectCommand({
         Bucket: sourceBucket,
         Key: sourceKey,
@@ -207,7 +204,6 @@ export class S3MigrationService implements IS3MigrationService {
         throw new Error('Empty object body received from source');
       }
 
-      // Use multipart upload for better handling of large files
       const upload = new Upload({
         client: destinationClient,
         params: {
@@ -217,9 +213,9 @@ export class S3MigrationService implements IS3MigrationService {
           ContentType,
           ContentLength,
         },
-        queueSize: 4, // number of concurrent upload parts
-        partSize: 1024 * 1024 * 5, // 5MB part size
-        leavePartsOnError: false, // clean up parts on error
+        queueSize: 4,
+        partSize: 1024 * 1024 * 5,
+        leavePartsOnError: false,
       });
 
       logger.debug('Starting multipart upload:', {
